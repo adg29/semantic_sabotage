@@ -144,8 +144,12 @@ var taxonomy = function(id) {
 				}
 
 				this.index_words++;
-				//return Math.max.apply(null, numArray);	
-				this.chart.domain([0,this.index_words]);
+				var msg_cat_arr = $.map(this.data[0].data,function(v,i){
+					return v;
+				});
+				var msg_cat_max = Math.max.apply(null, msg_cat_arr);
+				console.log(msg_cat_max);
+				this.chart.domain([0,msg_cat_max]);
 				this.update();
 				
 				var wc = document.createElement('div'); //creates new div for word container object, which will also contain the categoryContainer
