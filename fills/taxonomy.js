@@ -10,7 +10,34 @@ var taxonomy = function(id) {
 		$el: $('<div class="modeContainer" id="'+id+'"></div>'),
 
 		index: 0, // defines global variable this.index used to keep track of sentence objects -- see below
-		
+		index_words: 0,
+
+		chart: null,
+		data: null,
+		keys: ['hello'],
+
+		initData: function(){
+		  this.data = [{data: {}}];
+		  var k = this.keys;
+		  console.log('k');
+		  console.log(k);
+		  console.log(k[0]);
+		  console.log(this.data)
+		  for(var i=0; i<k.length; i++){
+		  	console.log('for')
+		  	console.log(k[i]);
+		    this.data[0].data[k[i]] = 0;
+		  }
+		},
+
+		update: function(){
+		  var c = this.chart;
+		  var d = this.data;
+		  d3.select('#chart')
+		    .datum(d)
+		    .call(c);
+		},
+
 		// INITIALIZE MODE.
 		// Do anything you want to do to set up your mode the first time here.
 		// This gets called once after the mode is loaded.
@@ -27,6 +54,7 @@ var taxonomy = function(id) {
 			this.$el.empty(); // empty modeContainer div for setup
 
 			this.index = 0; // initializes this.index to keep track of sentence objects -- see below
+			this.index_words = 0;
 
 			this.$el.append('<div class="container proxima-nova-700"></div>'); // appends container class to modeContainer for Taxonomy
 
@@ -34,6 +62,23 @@ var taxonomy = function(id) {
 			$(so).addClass('so' + this.index); // creates a dummy class with this.index to keep track of sentence objects
 			$(so).addClass('sentenceObject'); // adds sentenceObject class for css styling
 			this.$el.find('.container').append(so); // attaches sentenceObject div to container
+
+			d3.select('#update')
+			  .on('click', this.update);
+
+		  	this.initData();
+
+			this.chart = radialBarChart()
+			  .barHeight(250)
+			  .reverseLayerOrder(true)
+			  .capitalizeLabels(true)
+			  .barColors(['#B66199', '#9392CB', '#76D9FA', '#BCE3AD', '#FFD28C', '#F2918B'])
+			  .domain([0,10])
+			  .tickValues([1,2,3,4,5,6,7,8,9,10])
+			  .tickCircleValues([1,2,3,4,5,6,7,8,9]);
+
+			this.update();
+		
 
 		}, // end enter
 
@@ -83,9 +128,25 @@ var taxonomy = function(id) {
 				}
 				else {
 					for (var i=0; i<msg.cats.length; i++) { // for each category designation, appends category names to the categoryContainer
-						if (msg.cats[i] != msg.cats[i-1] && msg.cats[i] != 'sentencesmode') $(cc).append(msg.cats[i] + ' '); // checks for double-tagging (and for a LIWC SOSO artifact)
+						if (msg.cats[i] != msg.cats[i-1] && msg.cats[i] != 'sentencesmode') {
+
+							$(cc).append(msg.cats[i] + ' '); // checks for double-tagging (and for a LIWC SOSO artifact)
+
+							var indexOf = this.keys.indexOf(msg.cats[i]);
+							if(indexOf>=0){
+			    				this.data[0].data[msg.cats[i]]++;
+							}else{
+								this.keys.push(msg.cats[i]);
+			    				this.data[0].data[msg.cats[i]] = 0;
+							}
+						}
 					}
 				}
+
+				this.index_words++;
+				//return Math.max.apply(null, numArray);	
+				this.chart.domain([0,this.index_words]);
+				this.update();
 				
 				var wc = document.createElement('div'); //creates new div for word container object, which will also contain the categoryContainer
 				$(wc).addClass('wordContainer'); // adds wordContainer class for css styling
