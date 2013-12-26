@@ -28,6 +28,71 @@
 		<link rel="stylesheet" href="css/libs/animate-custom.css" type="text/css" media="screen, projection">
 		<style type="text/css">
 			<?php include 'php/fills_css.php'; ?>
+
+#chart {
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 14px;
+}
+#chart path {
+  fill: none;
+}
+
+/* layers */
+#chart .layer-0 path {
+  fill: steelblue;
+}
+#chart .layer-1 path {
+  fill: white !important;
+  opacity: 0.3;
+  stroke-width: 2px;
+  stroke: #999;
+}
+
+/* Outer circle, tick-circles and spokes */
+#chart circle.outer {
+  stroke: #aaa;
+  stroke-dasharray: 4, 4;  
+}
+#chart .tick-circles circle {
+  stroke: #ddd;
+  stroke-dasharray: 2, 2;  
+}
+#chart .spokes line {
+  stroke: #666;
+  stroke-width: 0.2;
+}
+
+/* Axis */
+#chart .axis text {
+  font-size: 11px;
+}
+#chart .axis path {
+  stroke: #999;
+  shape-rendering: crispEdges;
+}
+#chart .axis line {
+  stroke: #999;
+  shape-rendering: crispEdges;
+}
+
+/* Labels */
+#chart .labels text {
+  fill: #333;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* update button */
+#update {
+  width: 100px;
+  height: 30px;
+  cursor: pointer;
+}
+
+
 		</style>
 		
 		<!-- Use Google CDN for jQuery -->
@@ -112,7 +177,7 @@
 		<div id="modes">
 		</div>
 
-	<script src="LIWC/LIWC.js"></script>
+    	<div id="chart"></div>
 
 	<!-- google yt api stuff -->
 	<script src="http://www.google.com/jsapi" type="text/javascript"></script>
@@ -128,12 +193,50 @@
 	<script src="js/player.js"></script>
 	<script src="js/sabotage.js"></script>
 
+
+	<script src="js/radialbarchart/d3.v3.min.js"></script>
+    <script src="js/radialbarchart/radialBarChart.js"></script>
+
+
 	<script type="text/javascript"> 
 		$(document).ready(function() {
 			// Check browser type
 			checkBrowser();
 			// Initialize the app
 			init();
+
+			var data = null;
+			var keys = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+			function initData() {
+			  data = [{data: {}}];
+			  for(var i=0; i<keys.length; i++)
+			    data[0].data[keys[i]] = Math.random() * 10;
+			};
+
+			function update() {
+			  initData();
+
+			  d3.select('#chart')
+			    .datum(data)
+			    .call(chart);
+			}
+
+			d3.select('#update')
+			  .on('click', update);
+
+			var chart = radialBarChart()
+			  .barHeight(250)
+			  .reverseLayerOrder(true)
+			  .capitalizeLabels(true)
+			  .barColors(['#B66199', '#9392CB', '#76D9FA', '#BCE3AD', '#FFD28C', '#F2918B'])
+			  .domain([0,10])
+			  .tickValues([1,2,3,4,5,6,7,8,9,10])
+			  .tickCircleValues([1,2,3,4,5,6,7,8,9]);
+
+			update();
+
+
 		});
 	</script>
 
