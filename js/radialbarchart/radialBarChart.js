@@ -60,6 +60,10 @@ function radialBarChart() {
   function renderOverlays(container) {
     var g = d3.select(container).select('svg g.radial-barchart');
 
+    g.selectAll('g.labels').remove();
+    g.selectAll('g.axis').remove();
+    g.selectAll('g.spokes').remove();
+
     // Spokes
     g.append('g')
       .classed('spokes', true)
@@ -161,7 +165,6 @@ function radialBarChart() {
         .duration(transitionDuration)
         .attr('d', d3.svg.arc().innerRadius(0).outerRadius(or).startAngle(sa).endAngle(ea))
 
-      if(!update)
         renderOverlays(this);
     });
 
