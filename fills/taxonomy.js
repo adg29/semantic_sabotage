@@ -137,7 +137,9 @@ var taxonomy = function(id) {
 			    				this.data[0].data[msg.cats[i]]++;
 							}else{
 								this.keys.push(msg.cats[i]);
-			    				this.data[0].data[msg.cats[i]] = 0;
+			    				this.data[0].data[msg.cats[i]] = 1;
+								console.log(this.keys);
+								console.log(this.data[0].data);
 							}
 						}
 					}
@@ -149,6 +151,7 @@ var taxonomy = function(id) {
 				});
 				var msg_cat_max = Math.max.apply(null, msg_cat_arr);
 				console.log(msg_cat_max);
+				this.chart.tickValues(d3.range(0,msg_cat_max,msg_cat_max/10));
 				this.chart.domain([0,msg_cat_max]);
 				this.update();
 				
